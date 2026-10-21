@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Joker Mobile</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lEtS pLaY a gAmE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0d031b;
+      --bg-mid: #1a0933;
+      --bg-card: #2d124d;
+      --neon-purple: #b026ff;
+      --neon-magenta: #ff007f;
+      --neon-gold: #ffd700;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(circle at center, #1a0933 0%, #0d031b 70%, #05010a 100%);
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .font-cinzel {
+      font-family: 'Cinzel', serif;
+    }
+
+    /* Glowing Text & Effects */
+    .glow-title {
+      text-shadow: 0 0 10px rgba(176, 38, 255, 0.8),
+        0 0 20px rgba(176, 38, 255, 0.5),
+        0 0 30px rgba(255, 215, 0, 0.6);
+    }
+
+    .glow-gold {
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.8),
+        0 0 16px rgba(255, 215, 0, 0.4);
+    }
+
+    .card-glow-border {
+      box-shadow: 0 0 20px rgba(176, 38, 255, 0.35), inset 0 0 15px rgba(176, 38, 255, 0.2);
+      border: 2px solid rgba(255, 215, 0, 0.4);
+    }
+
+    .card-glow-border:hover {
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.7), inset 0 0 25px rgba(176, 38, 255, 0.5);
+      border-color: rgba(255, 215, 0, 0.9);
+    }
+
+    /* 3D Card Flip Styling */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .card-container.flipped .card-inner {
+      transform: rotateY(180deg);
+      cursor: default;
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Card Back */
+    .card-back {
+      background: linear-gradient(135deg, #2d124d 0%, #1a0933 100%);
+      background-image:
+        radial-gradient(circle at 50% 50%, rgba(176, 38, 255, 0.2) 0%, transparent 80%),
+        repeating-linear-gradient(45deg, rgba(255, 215, 0, 0.04) 0px, rgba(255, 215, 0, 0.04) 2px, transparent 2px, transparent 10px);
+    }
+
+    /* Card Front */
+    .card-front {
+      background: linear-gradient(145deg, #3d1768, #1e0938);
+      transform: rotateY(180deg);
+      box-shadow: inset 0 0 25px rgba(255, 215, 0, 0.25), 0 0 25px rgba(0, 0, 0, 0.8);
+      border: 2px solid var(--neon-gold);
+    }
+
+    /* Ambient Background Canvas */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Modal Animation */
+    .modal-enter {
+      animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes modalPop {
+      0% {
+        opacity: 0;
+        transform: scale(0.7) translateY(30px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen relative overflow-y-auto">
+
+  <!-- Ambient Particle Canvas -->
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="relative z-10 flex flex-col min-h-screen max-w-4xl mx-auto px-4 py-6 w-full justify-between items-center">
+
+    <!-- Header Section -->
+    <header class="text-center mb-4">
+      <div class="inline-flex items-center justify-center space-x-3 mb-1">
+        <!-- Header Mini Joker Icon -->
+        <svg class="w-8 h-8 text-amber-400 animate-pulse" viewBox="0 0 100 100" fill="currentColor">
+          <path d="M50 10 L60 35 L85 20 L70 45 L95 55 L68 65 L75 90 L50 75 L25 90 L32 65 L5 55 L30 45 L15 20 L40 35 Z" />
+        </svg>
+        <h1 class="text-3xl md:text-5xl font-extrabold font-cinzel tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-purple-300 to-pink-500 glow-title">
+          lEtS pLaY a gAmE!
+        </h1>
+        <svg class="w-8 h-8 text-amber-400 animate-pulse" viewBox="0 0 100 100" fill="currentColor">
+          <path d="M50 10 L60 35 L85 20 L70 45 L95 55 L68 65 L75 90 L50 75 L25 90 L32 65 L5 55 L30 45 L15 20 L40 35 Z" />
+        </svg>
+      </div>
+      <p class="text-purple-200/80 text-sm md:text-base font-medium tracking-wide">
+        TaP tHe CaRd tO ReVeAL YoUr FAtE!
+      </p>
+
+      <!-- Sound Control -->
+      <div class="mt-3 flex justify-center">
+        <button id="soundToggleBtn" onclick="toggleSound()" class="bg-purple-950/80 border border-purple-500/40 hover:border-amber-400/60 p-2 px-4 rounded-full backdrop-blur-md transition-all duration-300 flex items-center gap-2 text-xs uppercase tracking-wider text-purple-200">
+          <span id="soundIcon">🔊</span>
+          <span id="soundText" class="font-semibold">Sound On</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Single Card Area -->
+    <main class="flex-grow flex items-center justify-center my-4 w-full">
+      <div id="singleCardContainer" class="w-full max-w-xs sm:max-w-sm aspect-[3/4]">
+        <!-- Single Card dynamically rendered via JS -->
+      </div>
+    </main>
+
+    <!-- Footer Controls -->
+    <footer class="text-center py-4">
+      <button id="reshuffleBtn" onclick="drawRandomCard()" class="relative group overflow-hidden rounded-xl p-0.5 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400">
+        <span class="absolute inset-0 bg-gradient-to-r from-amber-400 via-fuchsia-600 to-purple-600 rounded-xl transition-all duration-300 group-hover:opacity-100 opacity-80 blur-sm"></span>
+        <span class="relative block px-8 py-3.5 rounded-xl bg-slate-950/90 text-amber-300 font-cinzel tracking-widest text-base md:text-lg transition-all duration-300 group-hover:bg-purple-950/80 group-hover:text-white flex items-center gap-3">
+          <svg class="w-5 h-5 transition-transform duration-500 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          DrAW NeW CaRD
+        </span>
+      </button>
+    </footer>
+  </div>
+
+  <!-- Prompt Modal Display -->
+  <div id="promptModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity duration-300">
+    <div class="relative w-full max-w-xl bg-gradient-to-b from-purple-900 via-slate-900 to-purple-950 border-2 border-amber-400/80 rounded-2xl p-6 md:p-10 text-center shadow-2xl modal-enter flex flex-col items-center">
+
+      <!-- Close Button -->
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-purple-300 hover:text-amber-400 text-2xl font-bold w-10 h-10 rounded-full flex items-center justify-center bg-purple-950/60 border border-purple-500/30 hover:bg-purple-800/50 transition">
+        ✕
+      </button>
+
+      <!-- Decorative Joker SVG Icon -->
+      <div class="mb-4 text-amber-400">
+        <svg class="w-16 h-16 mx-auto filter drop-shadow-[0_0_10px_rgba(255,215,0,0.6)]" viewBox="0 0 100 100" fill="currentColor">
+          <path d="M50 15 C 55 30, 70 25, 80 15 C 75 35, 65 40, 50 45 C 35 40, 25 35, 20 15 C 30 25, 45 30, 50 15 Z" fill="#ffd700" />
+          <circle cx="80" cy="15" r="5" fill="#ff007f" />
+          <circle cx="20" cy="15" r="5" fill="#ff007f" />
+          <circle cx="50" cy="15" r="5" fill="#b026ff" />
+          <path d="M30 45 Q 50 35 70 45 Q 85 70 50 90 Q 15 70 30 45 Z" fill="#2d124d" stroke="#ffd700" stroke-width="3" />
+          <path d="M38 58 Q 50 50 62 58 Q 50 78 38 58 Z" fill="#ff007f" />
+          <circle cx="42" cy="52" r="3" fill="#fff" />
+          <circle cx="58" cy="52" r="3" fill="#fff" />
+        </svg>
+      </div>
+
+      <span class="text-xs uppercase tracking-widest text-fuchsia-400 font-bold mb-2">Read out loud!</span>
+
+      <!-- Modal Prompt Text -->
+      <h2 id="modalPromptText" class="text-2xl md:text-4xl font-extrabold text-amber-200 font-cinzel leading-snug my-4 glow-gold">
+        PROMPT GOES HERE
+      </h2>
+
+      <button onclick="closeModal()" class="px-8 py-3 bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 font-extrabold rounded-xl shadow-lg transition-all transform hover:scale-105 active:scale-95 font-cinzel tracking-wider mt-4">
+        CONTINUE
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // 12 Prompts List
+    const PROMPTS = [
+      "Why So Serious?- Finish your drink",
+      "Evil Twins- Shotgun with somone you choose.",
+      "Mystery Mission — Get someone to say the word “pumpkin” without directly asking them to.",
+      "Mad Gaze- Staring contest with someone. Loser Drinks",
+      "Solve or Drink- What gets wetter the more it dries?",
+      "The Riddler- Tell someone a riddle, if they can solve it you drink, if not they drink.",
+      "Agent of Chaos- Choose someone to drink with you.",
+      "Solve or Drink- What belongs to you but other people use it more than you do.",
+      "Trick-or-treat the next door neighbor.",
+      "Clown Confession- Reveal a harmless embarassing fact about yourself.",
+      "Rock, Paper, Scissors with somone. Loser drinks.",
+      "Solve or Drink- What can travel around the world while staying in a corner."
+    ];
+
+    let currentPrompt = "";
+    let isFlipped = false;
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    // Web Audio Synthesizer Sound Effects
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playFlipSound() {
+      if (!soundEnabled) return;
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
+
+    function playReshuffleSound() {
+      if (!soundEnabled) return;
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      for (let i = 0; i < 4; i++) {
+        setTimeout(() => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(300 + i * 120, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.1);
+        }, i * 70);
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundIcon').innerText = soundEnabled ? '🔊' : '🔇';
+      document.getElementById('soundText').innerText = soundEnabled ? 'Sound On' : 'Sound Off';
+    }
+
+    // Inline SVG Joker Logo Generator
+    function getJokerLogoSVG() {
+      return `
+        <svg class="w-24 h-24 sm:w-28 sm:h-28 text-amber-400 drop-shadow-[0_0_12px_rgba(176,38,255,0.8)]" viewBox="0 0 100 100" fill="currentColor">
+          <path d="M20 35 C15 15, 30 10, 35 25 C42 10, 58 10, 65 25 C70 10, 85 15, 80 35 C70 30, 60 38, 50 42 C40 38, 30 30, 20 35 Z" fill="url(#jokerGrad)"/>
+          <circle cx="17" cy="15" r="4" fill="#ffd700"/>
+          <circle cx="50" cy="8" r="4.5" fill="#ff007f"/>
+          <circle cx="83" cy="15" r="4" fill="#ffd700"/>
+          <path d="M30 45 C30 35, 70 35, 70 45 C75 65, 50 85, 50 85 C50 85, 25 65, 30 45 Z" fill="#1a0933" stroke="#ffd700" stroke-width="2.5"/>
+          <path d="M36 50 L44 54 L36 56 Z" fill="#ffd700"/>
+          <path d="M64 50 L56 54 L64 56 Z" fill="#ffd700"/>
+          <path d="M35 66 Q 50 78 65 66 Q 50 72 35 66 Z" fill="#ff007f"/>
+          <defs>
+            <linearGradient id="jokerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ff007f" />
+              <stop offset="50%" stop-color="#b026ff" />
+              <stop offset="100%" stop-color="#ffd700" />
+            </linearGradient>
+          </defs>
+        </svg>
+      `;
+    }
+
+    // Render Single Card
+    function renderCard() {
+      const container = document.getElementById('singleCardContainer');
+      container.innerHTML = `
+        <div id="cardEl" class="perspective-1000 h-full w-full card-container ${isFlipped ? 'flipped' : ''}" role="button" tabindex="0" aria-label="Joker Game Card">
+          <div class="card-inner h-full w-full rounded-2xl shadow-2xl transition-all duration-300">
+            <!-- Card Back -->
+            <div class="card-face card-back card-glow-border p-6 flex flex-col justify-between">
+              <div class="w-full flex justify-between items-center text-amber-400/60 text-xs sm:text-sm font-cinzel">
+                <span>✦</span>
+                <span>wHY So sErIOuS</span>
+                <span>✦</span>
+              </div>
+              <div class="my-auto transform transition-transform duration-300 hover:scale-110">
+                ${getJokerLogoSVG()}
+                <p class="text-amber-300/80 font-cinzel text-sm mt-3 tracking-widest uppercase">Tap To Reveal</p>
+              </div>
+              <div class="w-full flex justify-between items-center text-amber-400/60 text-xs sm:text-sm font-cinzel">
+                <span>✦</span>
+                <span>sUrPRiSe, SuRprIsE</span>
+                <span>✦</span>
+              </div>
+            </div>
+
+            <!-- Card Front -->
+            <div class="card-face card-front p-6 flex flex-col justify-between text-center">
+              <div class="text-amber-400 text-xs sm:text-sm font-cinzel tracking-widest uppercase">yOuR fAtE</div>
+              <div class="my-auto px-2">
+                <p class="text-xl sm:text-2xl font-bold font-cinzel text-amber-100 leading-snug glow-gold">
+                  "${currentPrompt}"
+                </p>
+              </div>
+              <div class="text-purple-300/80 text-xs font-semibold">Joker's Game</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const cardEl = document.getElementById('cardEl');
+      cardEl.addEventListener('click', handleCardClick);
+      cardEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      });
+    }
+
+    // Card Click Action
+    function handleCardClick() {
+      if (isFlipped) return; // Already revealed
+      isFlipped = true;
+      playFlipSound();
+
+      // Trigger Confetti Effect
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 50,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ffd700', '#b026ff', '#ff007f']
+        });
+      }
+
+      renderCard();
+
+      // Open Pop-up Modal after short delay
+      setTimeout(() => {
+        showModal(currentPrompt);
+      }, 350);
+    }
+
+    // Pick a Random Card
+    function drawRandomCard() {
+      playReshuffleSound();
+      const randomIndex = Math.floor(Math.random() * PROMPTS.length);
+      currentPrompt = PROMPTS[randomIndex];
+      isFlipped = false;
+
+      const container = document.getElementById('singleCardContainer');
+      container.style.opacity = '0';
+      container.style.transform = 'scale(0.9)';
+
+      setTimeout(() => {
+        renderCard();
+        container.style.transition = 'all 0.4s ease-out';
+        container.style.opacity = '1';
+        container.style.transform = 'scale(1)';
+      }, 200);
+    }
+
+    // Modal Display Functions
+    function showModal(promptText) {
+      const modal = document.getElementById('promptModal');
+      document.getElementById('modalPromptText').innerText = `"${promptText}"`;
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('promptModal');
+      modal.classList.add('hidden');
+    }
+
+    // Interactive Ambient Particle Background
+    function initParticles() {
+      const canvas = document.getElementById('bgCanvas');
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const particles = Array.from({ length: 45 }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 3 + 1,
+        color: ['rgba(176,38,255,', 'rgba(255,0,127,', 'rgba(255,215,0,'][Math.floor(Math.random() * 3)],
+        alpha: Math.random() * 0.5 + 0.2,
+        speedX: (Math.random() - 0.5) * 0.5,
+        speedY: (Math.random() - 0.5) * 0.5
+      }));
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.x += p.speedX;
+          p.y += p.speedY;
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color + p.alpha + ')';
+          ctx.fill();
+        });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    // Initialize Game on Load
+    window.onload = function() {
+      initParticles();
+      drawRandomCard();
+    };
+  </script>
+</body>
+
+</html>
+    
+  </body>
+  
+</html>
